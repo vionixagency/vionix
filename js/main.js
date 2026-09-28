@@ -1,130 +1,249 @@
+/* ==========================================================================
+   VIONIX GALACTIC MOTION & SCENE ENGINE
+   ========================================================================== */
 
-document.documentElement.classList.add('js');
-document.documentElement.classList.add('page-ready');
-document.addEventListener('DOMContentLoaded', () => {
-  const header=document.querySelector('.site-header');
-  const nav=document.querySelector('.nav');
-  const toggle=document.querySelector('.nav-toggle');
-  const mega=document.querySelector('.mega');
-  const trigger=document.querySelector('[data-services-trigger]');
-  const motion=document.querySelector('[data-motion-toggle]');
+(function() {
+  'use strict';
 
-  const syncHeader=()=>header?.classList.toggle('scrolled', window.scrollY>24);
-  syncHeader();
-  window.addEventListener('scroll',syncHeader,{passive:true});
-
-  const closeMega=()=>{if(!mega)return;mega.classList.remove('is-open');trigger?.setAttribute('aria-expanded','false');};
-  const openMega=(force)=>{if(!mega)return;const next=force ?? !mega.classList.contains('is-open');mega.classList.toggle('is-open',next);trigger?.setAttribute('aria-expanded',String(next));};
-  trigger?.addEventListener('click',()=>{openMega();});
-  trigger?.addEventListener('mouseenter',()=>{if(window.matchMedia('(hover:hover)').matches && !window.matchMedia('(max-width:1020px)').matches)openMega(true);});
-  mega?.addEventListener('mouseleave',()=>{if(!window.matchMedia('(max-width:1020px)').matches)closeMega();});
-  document.addEventListener('click',(e)=>{if(mega && !mega.contains(e.target) && !trigger?.contains(e.target) && !window.matchMedia('(max-width:1020px)').matches)closeMega();});
-
-  toggle?.addEventListener('click',()=>{
-    const isOpen=toggle.getAttribute('aria-expanded')==='true';
-    toggle.setAttribute('aria-expanded',String(!isOpen));
-    toggle.setAttribute('aria-label',isOpen?'Open menu':'Close menu');
-    nav?.classList.toggle('is-mobile-open',!isOpen);
-    document.body.classList.toggle('nav-open',!isOpen);
-  });
-
-  document.addEventListener('keydown',(e)=>{
-    if(e.key==='Escape'){
-      closeMega();
-      if(nav?.classList.contains('is-mobile-open')) toggle?.click();
-    }
-  });
-
-  nav?.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{if(nav.classList.contains('is-mobile-open'))toggle?.click();}));
-
-  const reveals=document.querySelectorAll('.reveal,.reveal-group');
-  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(!reduced && 'IntersectionObserver' in window){
-    const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{
-      if(entry.isIntersecting){entry.target.classList.add('in');observer.unobserve(entry.target);}
-    }),{threshold:0.15});
-    reveals.forEach(el=>observer.observe(el));
-  }else{reveals.forEach(el=>el.classList.add('in'));}
-
-  // Problem selector: one panel open at a time.
-  const cards=[...document.querySelectorAll('.problem-card')];
-  const panels=[...document.querySelectorAll('.problem-panel')];
-  const placeholder=document.querySelector('.problem-placeholder');
-  const openProblem=(key)=>{
-    cards.forEach(card=>card.setAttribute('aria-expanded',String(card.dataset.problem===key)));
-    panels.forEach(panel=>{panel.hidden=panel.dataset.problemPanel!==key;});
-    if(placeholder)placeholder.hidden=true;
+  // State Management & Hardware Adaptation
+  const state = {
+    isPaused: localStorage.getItem('vionix_anim_paused') === 'true',
+    reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    fps: 60,
+    lastFrameTime: performance.now(),
+    particleScale: 1.0,
+    pointer: { x: -1000, y: -1000, targetX: -1000, targetY: -1000 },
+    activeScene: document.body.dataset.scene || 'home'
   };
-  cards.forEach(card=>card.addEventListener('click',()=>openProblem(card.dataset.problem)));
 
-  // FAQ / accordion groups.
-  document.querySelectorAll('[data-accordion-group]').forEach(group=>{
-    const buttons=[...group.querySelectorAll('[aria-controls]')];
-    buttons.forEach(button=>button.addEventListener('click',()=>{
-      const panel=document.getElementById(button.getAttribute('aria-controls'));
-      const wasOpen=button.getAttribute('aria-expanded')==='true';
-      buttons.forEach(other=>{
-        other.setAttribute('aria-expanded','false');
-        const target=document.getElementById(other.getAttribute('aria-controls'));
-        if(target)target.hidden=true;
-      });
-      button.setAttribute('aria-expanded',String(!wasOpen));
-      if(panel)panel.hidden=wasOpen;
-    }));
-  });
-
-  // Ambient and bar animations pause when off-screen, hidden or manually paused.
-  let paused=false;
-  const setAnimatedState=(state)=>document.querySelectorAll('.flow,.bar').forEach(el=>{el.style.animationPlayState=state?'paused':'running';});
-  motion?.addEventListener('click',()=>{
-    paused=!paused;
-    motion.setAttribute('aria-pressed',String(paused));
-    motion.setAttribute('aria-label',paused?'Resume animations':'Pause animations');
-    setAnimatedState(paused);
-  });
-  const ambient=document.querySelectorAll('.ambient');
-  if('IntersectionObserver' in window){
-    const ambientObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{entry.target.querySelectorAll('.flow').forEach(el=>el.style.animationPlayState=(entry.isIntersecting&&!paused)?'running':'paused');}));
-    ambient.forEach(el=>ambientObserver.observe(el));
+  // E. Adaptive Quality Throttling
+  let frameTimes = [];
+  function monitorPerformance(now) {
+    const delta = now - state.lastFrameTime;
+    state.lastFrameTime = now;
+    frameTimes.push(delta);
+    if (frameTimes.length > 30) {
+      frameTimes.shift();
+      const avgDelta = frameTimes.reduce((a, b) => a + b, 0) / frameTimes.length;
+      if (avgDelta > 20 && state.particleScale > 0.4) {
+        state.particleScale -= 0.1; // Throttle particle density dynamically
+      }
+    }
   }
-  document.addEventListener('visibilitychange',()=>{if(document.hidden)setAnimatedState(true);else if(!paused)setAnimatedState(false);});
 
-  // Interactive chart hover/focus dimming.
-  document.querySelectorAll('.chart-wrap').forEach(chart=>{
-    const bars=[...chart.querySelectorAll('.bar')];
-    bars.forEach(bar=>{
-      const activate=()=>bars.forEach(b=>b.style.opacity=b===bar?'1':'0.6');
-      const clear=()=>bars.forEach(b=>b.style.opacity='');
-      bar.addEventListener('mouseenter',activate);
-      bar.addEventListener('focus',activate);
-      bar.addEventListener('mouseleave',clear);
-      bar.addEventListener('blur',clear);
+  // B1. Canvas Particle Neural Network Engine
+  class NeuralNetworkCanvas {
+    constructor(canvasId) {
+      this.canvas = document.getElementById(canvasId);
+      if (!this.canvas) return;
+      this.ctx = this.canvas.getContext('2d');
+      this.particles = [];
+      this.init();
+      window.addEventListener('resize', () => this.resize());
+    }
+
+    init() {
+      this.resize();
+      this.createParticles();
+    }
+
+    resize() {
+      if (!this.canvas) return;
+      this.canvas.width = window.innerWidth * Math.min(window.devicePixelRatio, 2);
+      this.canvas.height = window.innerHeight * Math.min(window.devicePixelRatio, 2);
+    }
+
+    createParticles() {
+      const isMobile = window.innerWidth < 768;
+      const baseCount = isMobile ? 600 : 2200;
+      const count = Math.floor(baseCount * state.particleScale);
+      this.particles = [];
+      
+      for (let i = 0; i < count; i++) {
+        this.particles.push({
+          x: Math.random() * this.canvas.width,
+          y: Math.random() * this.canvas.height,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
+          radius: Math.random() * 1.5 + 0.5,
+          color: Math.random() > 0.3 ? '#22E4FF' : '#7B3FE4'
+        });
+      }
+    }
+
+    render() {
+      if (!this.ctx || state.isPaused || state.reducedMotion) return;
+      
+      const width = this.canvas.width;
+      const height = this.canvas.height;
+      this.ctx.clearRect(0, 0, width, height);
+
+      // Render connected network
+      for (let i = 0; i < this.particles.length; i++) {
+        let p = this.particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > width) p.vx *= -1;
+        if (p.y < 0 || p.y > height) p.vy *= -1;
+
+        // Pointer repulsion/attraction
+        const dx = state.pointer.x * Math.min(window.devicePixelRatio, 2) - p.x;
+        const dy = state.pointer.y * Math.min(window.devicePixelRatio, 2) - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          p.x -= (dx / dist) * 0.8;
+          p.y -= (dy / dist) * 0.8;
+        }
+
+        this.ctx.beginPath();
+        this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        this.ctx.fillStyle = p.color;
+        this.ctx.fill();
+      }
+    }
+  }
+
+  // B6. Magnetic Cursor Controller
+  function initMagneticCursor() {
+    if (matchMedia('(pointer: coarse)').matches || state.reducedMotion) return;
+
+    const cursorDot = document.createElement('div');
+    cursorDot.className = 'vionix-cursor-dot';
+    cursorDot.style.cssText = `
+      position: fixed; top:0; left:0; width: 8px; height: 8px;
+      background: #22E4FF; border-radius: 50%; pointer-events: none;
+      z-index: 9999; transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px #22E4FF; transition: transform 0.08s ease;
+    `;
+    document.body.appendChild(cursorDot);
+
+    window.addEventListener('pointermove', (e) => {
+      state.pointer.targetX = e.clientX;
+      state.pointer.targetY = e.clientY;
     });
+
+    function updateCursor() {
+      state.pointer.x += (state.pointer.targetX - state.pointer.x) * 0.2;
+      state.pointer.y += (state.pointer.targetY - state.pointer.y) * 0.2;
+      cursorDot.style.left = `${state.pointer.x}px`;
+      cursorDot.style.top = `${state.pointer.y}px`;
+
+      requestAnimationFrame(updateCursor);
+    }
+    updateCursor();
+
+    // Attach magnetic effect to buttons & CTAs
+    document.querySelectorAll('.btn, .social-icon-btn, .galactic-card').forEach(el => {
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const deltaX = (e.clientX - centerX) * 0.2;
+        const deltaY = (e.clientY - centerY) * 0.2;
+        el.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1.03)`;
+      });
+
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = '';
+      });
+    });
+  }
+
+  // B7. 3D Card Tilt Engine
+  function initCardTilt() {
+    if (matchMedia('(pointer: coarse)').matches || state.reducedMotion) return;
+
+    document.querySelectorAll('.galactic-card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -8;
+        const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 8;
+
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
+      });
+    });
+  }
+
+  // B2. Three.js Interactive 3D Globe Loader & Setup
+  function init3DGlobe() {
+    const container = document.getElementById('hero-globe-container');
+    if (!container || typeof THREE === 'undefined') return;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+
+    // Procedural Dot Sphere Globe
+    const geometry = new THREE.BufferGeometry();
+    const count = 1800;
+    const positions = new Float32Array(count * 3);
+
+    for (let i = 0; i < count; i++) {
+      const phi = Math.acos(-1 + (2 * i) / count);
+      const theta = Math.sqrt(count * Math.PI) * phi;
+      const radius = 2.2;
+
+      positions[i * 3] = radius * Math.cos(theta) * Math.sin(phi);
+      positions[i * 3 + 1] = radius * Math.sin(theta) * Math.sin(phi);
+      positions[i * 3 + 2] = radius * Math.cos(phi);
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const material = new THREE.PointsMaterial({ color: 0x22E4FF, size: 0.035, transparent: true, opacity: 0.85 });
+    const globeSphere = new THREE.Points(geometry, material);
+    scene.add(globeSphere);
+
+    camera.position.z = 6;
+
+    function animateGlobe() {
+      if (!state.isPaused) {
+        globeSphere.rotation.y += 0.002;
+        renderer.render(scene, camera);
+      }
+      requestAnimationFrame(animateGlobe);
+    }
+    animateGlobe();
+  }
+
+  // Pause Controls Toggle Implementation
+  function initPauseToggle() {
+    const toggleBtn = document.createElement('button');
+    toggleBtn.className = 'vionix-pause-toggle btn-ghost';
+    toggleBtn.innerHTML = state.isPaused ? '▶ Play Motion' : '⏸ Pause Motion';
+    toggleBtn.style.cssText = 'position: fixed; bottom: 16px; right: 16px; z-index: 999; backdrop-filter: blur(8px);';
+    document.body.appendChild(toggleBtn);
+
+    toggleBtn.addEventListener('click', () => {
+      state.isPaused = !state.isPaused;
+      localStorage.setItem('vionix_anim_paused', state.isPaused);
+      toggleBtn.innerHTML = state.isPaused ? '▶ Play Motion' : '⏸ Pause Motion';
+    });
+  }
+
+  // Initialize Scene Engine on Page Load
+  document.addEventListener('DOMContentLoaded', () => {
+    const network = new NeuralNetworkCanvas('bg-canvas');
+    initMagneticCursor();
+    initCardTilt();
+    initPauseToggle();
+    if (window.THREE) init3DGlobe();
+
+    function mainLoop(now) {
+      monitorPerformance(now);
+      if (network) network.render();
+      requestAnimationFrame(mainLoop);
+    }
+    requestAnimationFrame(mainLoop);
   });
-
-  // Static GitHub Pages form: validate, then prepare a mailto message.
-  document.querySelectorAll('[data-lead-form]').forEach(form=>form.addEventListener('submit',(e)=>{
-    e.preventDefault();
-    let ok=true;
-    form.querySelectorAll('[required]').forEach(input=>{
-      const message=input.parentElement.querySelector('small');
-      const value=input.value.trim();
-      if(!value){ok=false;if(message)message.textContent='This field is required.';}
-      else if(input.type==='email' && !/^\S+@\S+\.\S+$/.test(value)){ok=false;if(message)message.textContent='Enter a valid email address.';}
-      else if(input.type==='url'){try{new URL(value);}catch{ok=false;if(message)message.textContent='Enter a valid website URL.';}}
-      else if(message)message.textContent='';
-    });
-    const status=form.querySelector('.form-status');
-    if(!ok){status.textContent='Please check the highlighted fields.';status.className='form-status error';return;}
-    const data=new FormData(form);
-    const subject=encodeURIComponent(`Vionix Growth Audit — ${data.get('business')||'New enquiry'}`);
-    const body=encodeURIComponent([
-      `Name: ${data.get('name')||''}`,`Business: ${data.get('business')||''}`,`Email: ${data.get('email')||''}`,
-      `Phone/WhatsApp: ${data.get('phone')||''}`,`Website: ${data.get('website')||''}`,`Goal / challenge: ${data.get('challenge')||''}`
-    ].join('\n'));
-    status.textContent='Opening your email app…';status.className='form-status success';
-    window.location.href=`mailto:vionixsupport@gmail.com?subject=${subject}&body=${body}`;
-  }));
-
-  document.querySelectorAll('[data-year]').forEach(el=>el.textContent=new Date().getFullYear());
-});
+})();
