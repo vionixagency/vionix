@@ -224,7 +224,7 @@ main,.site-footer,.site-header{background:transparent}
   width:100%;
   height:100%;
   display:block;
-  z-index:0;
+  z-index:1;
   pointer-events:none;
   opacity:.96;
   mix-blend-mode:normal;
@@ -235,14 +235,20 @@ body > .site-footer,
 body > footer,
 body > .skip-link{
   position:relative;
-  z-index:2;
+  z-index:3;
+}
+.hero,.page-hero,.article-page,.breadcrumbs,section:not(.dark-section){
+  background-color:transparent;
+}
+.dark-section{
+  background:linear-gradient(150deg,rgba(3,5,15,.68),rgba(10,16,48,.62));
 }
 .site-header{z-index:120!important}
 .vx-weather-world::selection{background:transparent}
 .vx-world-vignette{
   position:fixed;
   inset:0;
-  z-index:1;
+  z-index:2;
   pointer-events:none;
   background:
     radial-gradient(circle at 50% 38%, transparent 22%, rgba(1,4,14,.12) 62%, rgba(1,3,10,.58) 100%),
@@ -254,3 +260,8 @@ body > .skip-link{
 @media (prefers-reduced-motion:reduce){
   .vx-weather-world{opacity:.38}
 }
+
+/* LIVING WORLD visibility boost: make the environment unmistakable without covering UI. */
+.vx-weather-world{opacity:1!important;filter:saturate(1.18) contrast(1.08) brightness(1.06)}
+.vx-world-vignette{background:linear-gradient(180deg,rgba(2,5,15,.04),transparent 38%,rgba(2,5,15,.18)),radial-gradient(circle at 50% 45%,transparent 34%,rgba(1,3,10,.28) 100%)}
+@media(max-width:800px){.vx-weather-world{opacity:.98!important}}
