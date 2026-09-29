@@ -1,3 +1,7 @@
+/* ================================================================
+   VIONIX VISUAL ENGINE
+   One shared animation system. Keep scene functions independent.
+   ================================================================ */
 (()=>{
   'use strict';
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -135,3 +139,17 @@
   // Social icon micro-burst
   $$('.social-icon').forEach(el=>{const burst=()=>{for(let i=0;i<5;i++){const p=document.createElement('i');p.className='social-particle';p.style.setProperty('--a',`${i*72}deg`);el.appendChild(p);setTimeout(()=>p.remove(),450)}};el.addEventListener('mouseenter',burst);el.addEventListener('focus',burst)});
 })();
+
+
+/* ---------------------------------------------------------------
+   Image slot fallback
+   Missing user images stay visually clean instead of showing a
+   broken-image icon. Replace the exact filename when ready.
+   --------------------------------------------------------------- */
+$$('.visual-slot img').forEach((image) => {
+  image.addEventListener('error', () => {
+    image.removeAttribute('src');
+    image.alt = 'Vionix image placeholder';
+    image.classList.add('image-missing');
+  });
+});

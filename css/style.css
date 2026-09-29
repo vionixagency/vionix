@@ -47,3 +47,140 @@ h1 .accent-text,h2 .accent-text{background:linear-gradient(100deg,var(--cyan),va
 @media (hover:none){.card:hover,.package:hover,.article-card:hover,.service-card:hover{transform:none}.vx-cursor,.vx-cursor-trail{display:none}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.flow,h1 .accent-text{animation:none}.reveal,.reveal-group,.intro-item{opacity:1;transform:none;transition:none}.vx-living-canvas{opacity:.32}.btn,.card,.package,.article-card,.social-icon{transition:none}}
 .vx-cursor{position:fixed;left:0;top:0;width:9px;height:9px;border-radius:50%;background:var(--cyan);box-shadow:0 0 16px var(--cyan),0 0 35px rgba(34,228,255,.55);pointer-events:none;z-index:9999;mix-blend-mode:screen}.vx-cursor-trail{position:fixed;width:4px;height:4px;border-radius:50%;background:var(--violet);pointer-events:none;z-index:9998;opacity:.34;mix-blend-mode:screen}.magnetic-active{transform:translate3d(var(--mag-x,0),var(--mag-y,0),0) scale(1.045)!important}@media (hover:none){.vx-cursor,.vx-cursor-trail{display:none}}
+
+/* ================================================================
+   VIONIX VISUAL LIBRARY
+   Replace slot images only. No page code changes are required.
+   ================================================================ */
+.visual-library {
+  position: relative;
+  padding: clamp(64px, 7vw, 110px) 0;
+}
+
+.visual-library-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 34px;
+}
+
+.visual-library-head > div {
+  max-width: 900px;
+}
+
+.visual-library-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.visual-slot {
+  position: relative;
+  overflow: hidden;
+  min-height: 300px;
+  border: 1px solid rgba(120, 160, 255, 0.24);
+  border-radius: 22px;
+  background: rgba(16, 32, 68, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 22px 70px rgba(0, 0, 0, 0.22);
+}
+
+.visual-slot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      115deg,
+      transparent 20%,
+      rgba(34, 228, 255, 0.12) 45%,
+      transparent 68%
+    );
+  transform: translateX(-120%);
+  transition: transform 900ms var(--ease);
+}
+
+.visual-slot:hover::after,
+.visual-slot:focus-within::after {
+  transform: translateX(120%);
+}
+
+.visual-slot img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  background: #E8F1FC;
+}
+
+.visual-slot-caption {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(120, 160, 255, 0.20);
+  border-radius: 14px;
+  background: rgba(6, 10, 30, 0.86);
+  backdrop-filter: blur(10px);
+}
+
+.visual-slot-caption strong {
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.visual-slot-caption span {
+  font-size: 0.78rem;
+  color: var(--text-mute);
+}
+
+.visual-slot-wide {
+  grid-column: 1 / -1;
+}
+
+.image-showcase {
+  display: grid;
+  grid-template-columns: 1.35fr 0.65fr;
+  gap: 20px;
+}
+
+.image-showcase .visual-slot:first-child {
+  min-height: 420px;
+}
+
+@media (max-width: 760px) {
+  .visual-library-head {
+    display: block;
+  }
+
+  .visual-library-head .small {
+    margin-top: 14px;
+  }
+
+  .visual-library-grid,
+  .image-showcase {
+    grid-template-columns: 1fr;
+  }
+
+  .visual-slot-wide {
+    grid-column: auto;
+  }
+
+  .visual-slot {
+    min-height: 240px;
+  }
+}
+
+
+.visual-slot img.image-missing {
+  min-height: 300px;
+  background: linear-gradient(135deg, #EAF2FC, #DCE9F8);
+}
