@@ -265,3 +265,92 @@ body > .skip-link{
 .vx-weather-world{opacity:1!important;filter:saturate(1.18) contrast(1.08) brightness(1.06)}
 .vx-world-vignette{background:linear-gradient(180deg,rgba(2,5,15,.04),transparent 38%,rgba(2,5,15,.18)),radial-gradient(circle at 50% 45%,transparent 34%,rgba(1,3,10,.28) 100%)}
 @media(max-width:800px){.vx-weather-world{opacity:.98!important}}
+
+
+/* ================================================================
+   VIONIX NATURAL WORLD — reliable visual fallback + daylight theme
+   This layer uses standard CSS animation so the scene is visible
+   even when canvas rendering is blocked or delayed.
+   ================================================================ */
+.vx-natural-world{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;isolation:isolate;font-size:16px}
+.vx-natural-world>*{position:absolute;inset:0}
+.world-sky{background:linear-gradient(180deg,#8fd3e8 0%,#ccebdc 52%,#9bcaa9 100%);animation:worldSky 28s ease-in-out infinite;opacity:1}
+.world-sun{inset:auto;left:66vw;top:14vh;width:18vmin;height:18vmin;border-radius:50%;background:radial-gradient(circle,#fff8c7 0 7%,#ffd879 18%,rgba(255,198,91,.36) 48%,transparent 72%);filter:blur(1px);animation:worldSun 28s ease-in-out infinite}
+.world-mountains{inset:auto 0 23vh 0;height:42vh;background:
+  linear-gradient(135deg,transparent 0 38%,#789f8e 38.2% 48%,transparent 48.2%),
+  linear-gradient(210deg,transparent 0 39%,#6f9787 39.2% 50%,transparent 50.2%),
+  linear-gradient(160deg,transparent 0 45%,#91b49e 45.2% 55%,transparent 55.2%);
+  background-size:58% 100%,62% 100%,76% 100%;background-position:left bottom,right bottom,center bottom;background-repeat:no-repeat;opacity:.82;animation:worldMountains 28s ease-in-out infinite}
+.world-forest{inset:auto 0 10vh 0;height:55vh;display:flex;align-items:flex-end;justify-content:space-around;padding:0 3vw;gap:1vw;animation:worldForest 28s ease-in-out infinite}
+.world-forest i{display:block;position:relative;width:7vw;max-width:105px;height:34vh;min-height:150px;background:linear-gradient(90deg,#254f3c,#36765a 48%,#183c2e);clip-path:polygon(50% 0,72% 23%,62% 23%,84% 43%,68% 43%,92% 66%,63% 66%,80% 100%,20% 100%,37% 66%,8% 66%,32% 43%,16% 43%,38% 23%,28% 23%);filter:drop-shadow(0 14px 20px rgba(30,70,52,.22));transform-origin:bottom center}
+.world-forest i:nth-child(2n){height:27vh;transform:scale(.78)}.world-forest i:nth-child(3n){height:40vh;transform:scale(.9)}.world-forest i:nth-child(4n){height:23vh;transform:scale(.7)}
+.world-river{inset:auto 26% 0 28%;height:58%;background:linear-gradient(90deg,transparent,#6bc6dc 18%,#b5eef0 49%,#5caec6 78%,transparent);clip-path:polygon(36% 0,64% 0,78% 100%,20% 100%);opacity:0;filter:drop-shadow(0 0 22px rgba(79,190,211,.4));animation:worldRiver 28s ease-in-out infinite}
+.world-desert{inset:auto 0 0;height:54%;background:
+  radial-gradient(ellipse at 20% 85%,#d9a65b 0 17%,transparent 18%),
+  radial-gradient(ellipse at 72% 92%,#e2b36b 0 22%,transparent 23%),
+  linear-gradient(180deg,#d8b16d,#e8c985 56%,#d2a25a);clip-path:polygon(0 22%,15% 15%,30% 25%,48% 12%,66% 24%,84% 14%,100% 22%,100% 100%,0 100%);opacity:0;animation:worldDesert 28s ease-in-out infinite}
+.world-cacti{inset:auto 0 8vh 0;height:38vh;display:flex;justify-content:space-around;align-items:flex-end;padding:0 4vw;opacity:0;animation:worldCacti 28s ease-in-out infinite}
+.world-cacti i{position:relative;width:18px;height:31vh;border-radius:12px 12px 5px 5px;background:#3e8060;box-shadow:inset 4px 0 rgba(255,255,255,.12)}
+.world-cacti i:before,.world-cacti i:after{content:"";position:absolute;width:13px;height:14vh;border:7px solid #3e8060;border-left:0;border-bottom:0;border-radius:0 14px 0 0}
+.world-cacti i:before{right:10px;top:25%;transform:rotate(180deg)}.world-cacti i:after{left:10px;top:45%;transform:scaleX(-1) rotate(180deg)}
+.world-birds{inset:0;opacity:.86;animation:worldBirds 28s linear infinite}
+.world-birds b{position:absolute;width:24px;height:12px;border-top:3px solid #315047;border-radius:50%;transform:rotate(-7deg)}
+.world-birds b:after{content:"";position:absolute;left:10px;top:-3px;width:24px;height:12px;border-top:3px solid #315047;border-radius:50%;transform:rotate(14deg)}
+.world-birds b:nth-child(1){left:13%;top:22%}.world-birds b:nth-child(2){left:27%;top:16%;transform:scale(.7)}.world-birds b:nth-child(3){left:49%;top:26%;transform:scale(.8)}.world-birds b:nth-child(4){left:72%;top:18%;transform:scale(.65)}.world-birds b:nth-child(5){left:82%;top:31%;transform:scale(.9)}.world-birds b:nth-child(6){left:58%;top:12%;transform:scale(.55)}
+.world-deer,.world-fox{inset:auto;bottom:17vh;width:110px;height:48px;background:#694b35;border-radius:55% 48% 38% 35%;left:15%;opacity:.88;animation:worldAnimal 28s ease-in-out infinite}
+.world-deer:before{content:"";position:absolute;width:42px;height:42px;right:-24px;top:-19px;background:#694b35;border-radius:55% 55% 45% 45%}.world-deer:after{content:"";position:absolute;left:15px;top:36px;width:8px;height:48px;background:#493425;box-shadow:54px 0 #493425,72px -3px #493425,28px 1px #493425;transform:skew(-7deg)}
+.world-fox{left:auto;right:13%;width:92px;height:38px;background:#a95f3f;bottom:15vh;transform:scale(.8);animation-delay:-9s}.world-fox:before{content:"";position:absolute;right:-16px;top:-15px;width:32px;height:32px;background:#a95f3f;clip-path:polygon(0 100%,10% 0,42% 35%,82% 5%,100% 100%)}.world-fox:after{content:"";position:absolute;left:-35px;top:3px;width:55px;height:25px;background:#a95f3f;clip-path:polygon(100% 45%,0 0,28% 100%)}
+.world-rain{background:repeating-linear-gradient(105deg,transparent 0 15px,rgba(255,255,255,.42) 16px,transparent 18px 29px);background-size:100% 62px;opacity:0;transform:translateY(-90px);animation:worldRain 28s linear infinite}
+.world-window{inset:0;background:
+ radial-gradient(circle at 18% 24%,rgba(255,255,255,.72) 0 3px,transparent 5px),
+ radial-gradient(circle at 54% 41%,rgba(255,255,255,.55) 0 4px,transparent 7px),
+ radial-gradient(circle at 78% 31%,rgba(255,255,255,.6) 0 3px,transparent 6px),
+ linear-gradient(100deg,transparent 0 48%,rgba(255,255,255,.12) 49%,transparent 50%);
+filter:blur(.2px);opacity:0;animation:worldWindow 28s ease-in-out infinite}
+.world-snow{background:
+radial-gradient(circle,rgba(255,255,255,.96) 0 3px,transparent 4px) 0 0/70px 70px,
+radial-gradient(circle,rgba(255,255,255,.8) 0 2px,transparent 3px) 25px 20px/55px 55px,
+radial-gradient(circle,rgba(255,255,255,.65) 0 2px,transparent 3px) 40px 10px/95px 95px;
+opacity:0;animation:worldSnow 28s linear infinite}
+.world-haze{background:radial-gradient(circle at 50% 68%,rgba(255,255,255,.30),transparent 55%);mix-blend-mode:screen;opacity:.55;animation:worldHaze 28s ease-in-out infinite}
+@keyframes worldSky{0%,7%{background:linear-gradient(180deg,#78c8df,#d4efe1 55%,#87b99a)}18%{background:linear-gradient(180deg,#f2c46d,#f5d8a2 48%,#78a879)}29%,45%{background:linear-gradient(180deg,#b9d9ef,#edf6f3 58%,#c7d8d0)}55%{background:linear-gradient(180deg,#f4d79b,#f6d1a0 50%,#b6c99b)}70%,100%{background:linear-gradient(180deg,#f0c875,#f5d79e 48%,#d5aa62)}}
+@keyframes worldSun{0%,12%{opacity:.18;transform:scale(.72)}18%,28%{opacity:1;transform:scale(1)}35%,52%{opacity:.8}58%,100%{opacity:1;transform:scale(1.08)}}
+@keyframes worldMountains{0%,50%{opacity:.82}60%,100%{opacity:.18}}
+@keyframes worldForest{0%,48%{opacity:1;transform:translateY(0)}56%{opacity:.7}68%,100%{opacity:0;transform:translateY(4vh)}}
+@keyframes worldRiver{0%,47%{opacity:0;transform:scaleY(.2)}55%{opacity:.85;transform:scaleY(1)}70%{opacity:.25}78%,100%{opacity:0}}
+@keyframes worldDesert{0%,54%{opacity:0}64%{opacity:.8}72%,100%{opacity:1}}
+@keyframes worldCacti{0%,58%{opacity:0;transform:translateY(2vh)}68%,100%{opacity:1;transform:none}}
+@keyframes worldBirds{0%,100%{transform:translateX(0)}50%{transform:translateX(3vw)}}
+@keyframes worldAnimal{0%,100%{transform:translateX(0)}38%{transform:translateX(5vw)}64%{transform:translateX(-2vw)}}
+@keyframes worldRain{0%,3%{opacity:0;transform:translateY(-90px)}7%{opacity:.28}13%{opacity:.78;transform:translateY(0)}22%{opacity:.04;transform:translateY(40px)}30%,100%{opacity:0}}
+@keyframes worldWindow{0%,7%{opacity:0}12%,21%{opacity:.78}27%,100%{opacity:0}}
+@keyframes worldSnow{0%,25%{opacity:0;transform:translateY(-80px)}31%{opacity:.35}39%{opacity:.88;transform:translateY(0)}50%{opacity:.16}57%,100%{opacity:0}}
+@keyframes worldHaze{0%,100%{opacity:.35}18%{opacity:.72}42%{opacity:.6}68%{opacity:.25}}
+/* Natural daylight interface: remove the near-black visual language. */
+:root{--space-950:#f5f8f3;--space-900:#eef4ef;--space-800:#e2ece6;--space-700:#d2e1d8;--nebula:#c9d8ee;--violet:#6f5bd3;--blue:#2764d8;--cyan:#008eae;--aqua:#168f7c;--gold:#d7922d;--text:#17231f;--text-mute:#52645d;--line:rgba(39,100,216,.18);--line-strong:rgba(0,142,174,.42)}
+body{background:#eef4ef;color:var(--text)}
+body:before{background:linear-gradient(180deg,rgba(244,249,246,.86),rgba(224,238,230,.94));filter:none}
+body:after{background:linear-gradient(180deg,transparent 0 72%,rgba(58,86,69,.08));}
+.vx-living-canvas{opacity:.10!important;mix-blend-mode:multiply}
+.site-header{background:rgba(250,253,250,.78);border-bottom:1px solid rgba(39,100,216,.12);box-shadow:0 8px 34px rgba(47,77,60,.08)}
+.site-header.scrolled{background:rgba(250,253,250,.94)}
+.nav-link{color:#53665d}.nav-link:hover,.nav-link:focus-visible,.nav-link.active{color:#007f9a}
+.brand{color:#173028}.brand-mark{box-shadow:0 8px 24px rgba(39,100,216,.20)}
+.hero,.page-hero{background:transparent}
+.vx-hero-stage{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.55);box-shadow:inset 0 0 70px rgba(255,255,255,.22),0 30px 80px rgba(52,82,64,.12);backdrop-filter:blur(2px)}
+.vx-stage-label{background:rgba(255,255,255,.58);color:#355249;border-color:rgba(39,100,216,.16)}
+.card,.package,.article-card,.problem-card,.service-visual-block,.audit-panel,.form-panel,.side-card,.visual-box,.table-wrap,.article-related,.article-cta,.system-diagram,.system-metrics,.growth-panel,.funnel-panel,.growth-control-room{background:rgba(255,255,255,.72);border-color:rgba(39,100,216,.13);box-shadow:0 18px 55px rgba(48,80,61,.09)}
+.card p,.package p,.article-card p,.service-card p,.lead{color:#52645d}
+.dark-section{background:rgba(255,255,255,.38);border-color:rgba(39,100,216,.10)}
+.dark-card{background:rgba(255,255,255,.72)}
+.step{background:rgba(255,255,255,.66);border-color:rgba(39,100,216,.14)}
+.funnel-stage{background:rgba(255,255,255,.58);color:var(--text)}
+.field input,.field textarea,.field select{background:rgba(255,255,255,.82);color:var(--text);border-color:rgba(39,100,216,.18)}
+.site-footer{background:linear-gradient(150deg,#dbe8df,#cbded1);border-top-color:rgba(39,100,216,.12)}
+.social-icon{background:rgba(255,255,255,.62);color:#24453a;border-color:rgba(0,142,174,.28)}
+.motion-control{background:rgba(255,255,255,.8);color:#007f9a;border-color:rgba(0,142,174,.28)}
+/* Keep content above the environment but let the scenery breathe through transparent sections. */
+.vx-natural-world{z-index:0}.vx-weather-world{z-index:1!important;opacity:.10!important;mix-blend-mode:multiply}.vx-world-vignette{z-index:2;opacity:.12}
+body>.site-header,body>main,body>.site-footer,body>footer{z-index:3!important}
+@media (prefers-reduced-motion:reduce){.vx-natural-world *{animation:none!important}.vx-natural-world{opacity:.82}.world-rain,.world-snow,.world-window{display:none}}
+@media (max-width:700px){.world-forest{padding:0 1vw;gap:0}.world-forest i{width:10vw}.world-river{left:18%;right:18%}.world-deer,.world-fox{transform:scale(.72);bottom:14vh}}
