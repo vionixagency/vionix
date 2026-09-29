@@ -205,3 +205,7 @@ main,.site-footer,.site-header{background:transparent}
 .card,.service-card,.package{transform-style:preserve-3d;will-change:transform}
 @media (max-width:800px){:root{--gutter:clamp(12px,4vw,16px)}.container{padding-inline:var(--gutter)}.motion-control{bottom:10px}.social-icon{width:44px;height:44px}}
 @media (max-width:480px){.container{padding-inline:12px}.hero-visual,.vx-hero-stage{min-height:380px}.vx-global-globe{height:360px}}
+
+.card-particle{position:absolute;left:50%;top:50%;width:4px;height:4px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan),0 0 18px rgba(123,63,228,.5);pointer-events:none;z-index:5;animation:card-particle-burst 500ms var(--ease) forwards;--dx:calc((var(--p) - 1.5) * 22px);--dy:calc((var(--p) - 1.5) * -18px)}
+@keyframes card-particle-burst{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}20%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.15)}}
+@media (prefers-reduced-motion:reduce){.card-particle{display:none}}
