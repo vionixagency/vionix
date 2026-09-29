@@ -339,3 +339,13 @@ document.querySelectorAll('.visual-slot img').forEach((image) => {
   reduce.addEventListener?.('change',()=>{if(reduce.matches){stop();ctx.clearRect(0,0,w,h)}else start()});
   if(!reduce.matches)start();
 })();
+
+
+/* Reliable DOM fallback for the seasonal environment on every page. */
+(()=>{
+  if(document.querySelector('.vx-natural-world')) return;
+  const el=document.createElement('div');
+  el.className='vx-natural-world'; el.setAttribute('aria-hidden','true');
+  el.innerHTML='<div class="world-sky"></div><div class="world-sun"></div><div class="world-mountains"></div><div class="world-forest"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="world-river"></div><div class="world-desert"></div><div class="world-cacti"><i></i><i></i><i></i><i></i><i></i></div><div class="world-birds"><b></b><b></b><b></b><b></b><b></b><b></b></div><div class="world-deer"></div><div class="world-fox"></div><div class="world-rain"></div><div class="world-window"></div><div class="world-snow"></div><div class="world-haze"></div>';
+  document.body.prepend(el);
+})();
