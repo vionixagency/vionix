@@ -3,8 +3,8 @@
   "short_name": "Vionix",
   "start_url": "/vionix/",
   "display": "standalone",
-  "background_color": "#060A1E",
-  "theme_color": "#060A1E",
+  "background_color": "#eef4ef",
+  "theme_color": "#eef4ef",
   "icons": [
     {
       "src": "/vionix/favicon.svg",
